@@ -1,12 +1,12 @@
 from Info import create_app
 
-app = create_app('develop')
+app = create_app('product')
 
 
 @app.route('/')
 def index():
     # session['a1'] = 'python'
-    app.Redis_sto.set('a1', 'xiaoyifan')
+    # app.Redis_sto.set('a1', 'xiaoyifan')
     return 'index111'
 
 

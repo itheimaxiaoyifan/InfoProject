@@ -1,3 +1,5 @@
+import logging
+
 import redis
 
 
@@ -20,11 +22,13 @@ class Config(object):
 # 开发环境的配置
 class DevelopConfig(Config):
     DEBUG = True
+    LOG_LV = logging.DEBUG
 
 
 # 生产环境的配置
 class ProductionConfig(Config):
     DEBUG = False
+    LOG_LV = logging.ERROR
 
 
 ConfigDict = {'develop': DevelopConfig, 'product': ProductionConfig}
