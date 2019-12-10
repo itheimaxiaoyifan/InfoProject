@@ -5,7 +5,11 @@ import redis
 from flask import Flask, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
+
 from config import ConfigDict
+
+db = SQLAlchemy()
+Redis_sto = None
 
 
 def create_app(env):
@@ -16,10 +20,15 @@ def create_app(env):
     # 配置日志信息
     # 调用记录日志函数
     log_file(current_app_config.LOG_LV)
-    db = SQLAlchemy(app)
+
+    db.init_app(app)
+    global Redis_sto
     Redis_sto = redis.StrictRedis(host=current_app_config.REDIS_HOST, port=current_app_config.REDIS_PORT)
     Session(app)
+    from Info.modules.index import index_blu
+    app.register_blueprint(index_blu)
     return app
+
 
 def log_file(lv):
     """记录日志信息"""
