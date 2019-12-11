@@ -1,4 +1,4 @@
-from Info import Redis_sto
+from Info import Redis_store
 from Info.modules.index import index_blu
 from flask import render_template, current_app
 
@@ -6,7 +6,7 @@ from flask import render_template, current_app
 @index_blu.route('/')
 def index():
     # session['a1'] = 'python'
-    Redis_sto.set('a1', 'xiaoyifan')
+    # Redis_store.set('a1', 'xiaoyifan')
     return render_template('news/index.html')
 
 

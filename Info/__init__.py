@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config import ConfigDict
 
 db = SQLAlchemy()
-Redis_sto = None
+Redis_store = None
 
 
 def create_app(env):
@@ -22,11 +22,14 @@ def create_app(env):
     log_file(current_app_config.LOG_LV)
 
     db.init_app(app)
-    global Redis_sto
-    Redis_sto = redis.StrictRedis(host=current_app_config.REDIS_HOST, port=current_app_config.REDIS_PORT)
+    global Redis_store
+    Redis_store = redis.StrictRedis(host=current_app_config.REDIS_HOST, port=current_app_config.REDIS_PORT)
     Session(app)
     from Info.modules.index import index_blu
     app.register_blueprint(index_blu)
+
+    from Info.modules.passport import passport_blu
+    app.register_blueprint(passport_blu)
     return app
 
 
