@@ -123,13 +123,13 @@ $(function () {
             "mobile": mobile,
             "password": password
         }
-        /*
+
         $.ajax({
             url:'/passport/login',
             type:'post',
             data:JSON.stringify(params),
             contentType:'application/json',
-            headers:{'X-CSRFToken':getCookie('csrf_token')},
+            // headers:{'X-CSRFToken':getCookie('csrf_token')},
             success: function (resp) {
                 //判断是否登陆成功
                 if(resp.errno == '0'){
@@ -140,7 +140,7 @@ $(function () {
 
             }
         })
-        */
+
     })
 
 
@@ -183,7 +183,7 @@ $(function () {
             "password": password,
             "agree": agree
         }
-        /*
+
         $.ajax({
             url:'/passport/register',
             type:'post',
@@ -200,22 +200,22 @@ $(function () {
                 }
             }
         })
-        */
+
     })
 })
 
 //退出登陆
 function logout() {
-    /*
     $.ajax({
         url:'/passport/logout',
-        type:'post',
-        headers:{'X-CSRFToken':getCookie('csrf_token')},
+        type:'get',
+        // headers:{'X-CSRFToken':getCookie('csrf_token')},
         success:function (resp) {
+            // alert(resp.errmsg)
             window.location.reload()
         }
     })
-    */
+
 }
 
 
