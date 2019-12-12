@@ -141,6 +141,12 @@ def login():
     # 　校验密码
     if not user.check_passowrd(password):
         return jsonify(errno=RET.PWDERR, errmsg='密码错误')
+    from datetime import datetime
+    user.last_login = datetime.now()
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
     #  保存用户登录状态
     session['user_id'] = user.id
     session['nick_name'] = user.nick_name

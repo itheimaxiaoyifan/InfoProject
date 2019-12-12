@@ -6,6 +6,7 @@ from flask import Flask, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 
+
 from config import ConfigDict
 
 db = SQLAlchemy()
@@ -25,11 +26,28 @@ def create_app(env):
     global Redis_store
     Redis_store = redis.StrictRedis(host=current_app_config.REDIS_HOST, port=current_app_config.REDIS_PORT)
     Session(app)
+
+    # 添加csrf防护,验证前端与后端是否一致
+    from flask_wtf import CSRFProtect
+    CSRFProtect(app)
+
+    from flask_wtf.csrf import generate_csrf
+    @app.after_request
+    def after_request(response):
+        # 生成token
+        csrf_token = generate_csrf()
+        # 传给前端csrf值
+        response.set_cookie('csrf_token', csrf_token)
+        return response
+    # 生成一个过滤器给前端去展示首页的点击排行页面
+    from Info.utils.common import to_class_index
+    app.add_template_filter(to_class_index, "to_class_name")
+    # 注册蓝图
     from Info.modules.index import index_blu
     app.register_blueprint(index_blu)
-
     from Info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
+
     return app
 
 
