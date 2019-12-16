@@ -7,7 +7,6 @@ function getCookie(name) {
 $(function () {
     $(".pass_info").submit(function (e) {
         e.preventDefault();
-
         var params = {};
         //遍历获取表单内容
         $(this).serializeArray().map(function (x) {
@@ -21,9 +20,7 @@ $(function () {
             alert('两次密码输入不一致')
             return
         }
-
         // TODO 修改密码
-        /*
         $.ajax({
             url: "/user/pass_info",
             type: "post",
@@ -42,6 +39,6 @@ $(function () {
                 }
             }
         })
-        */
+
     })
 })

@@ -2,10 +2,9 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 import redis
-from flask import Flask, session
+from flask import Flask, session, render_template, g
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
-
 
 from config import ConfigDict
 
@@ -39,6 +38,7 @@ def create_app(env):
         # 传给前端csrf值
         response.set_cookie('csrf_token', csrf_token)
         return response
+
     # 生成一个过滤器给前端去展示首页的点击排行页面
     from Info.utils.common import to_class_index
     app.add_template_filter(to_class_index, "to_class_name")
@@ -47,6 +47,20 @@ def create_app(env):
     app.register_blueprint(index_blu)
     from Info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
+    from Info.modules.news_detail import news_detail_blu
+    app.register_blueprint(news_detail_blu)
+    from Info.modules.profile import profile_blu
+    app.register_blueprint(profile_blu)
+
+    from Info.utils.common import get_login_data
+    @app.errorhandler(404)
+    @get_login_data
+    def page_not_found(_):
+        user = g.user
+        data = {
+            "user_info": user.to_dict() if user else None,
+        }
+        return render_template('news/404.html',data=data )
 
     return app
 

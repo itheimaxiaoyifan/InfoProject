@@ -4,3 +4,4 @@ logs/
 migrations/
 logs/
 migrations/
+.qiniu_pythonsdk_hostscache.json

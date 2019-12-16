@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>首页-新经资讯</title>
+    <title>{% block Title %}首页-新经资讯{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="../../static/news/css/reset.css">
     <link rel="stylesheet" type="text/css" href="../../static/news/css/main.css">
     <script type="text/javascript" src="../../static/news/js/jquery-1.12.4.min.js"></script>
+    {% block ScriptBlock %}
+        <script type="text/javascript" src="../../static/news/js/index.js"></script>
+    {% endblock %}
     <script type="text/javascript" src="../../static/news/js/main.js"></script>
-    <script type="text/javascript" src="../../static/news/js/index.js"></script>
 </head>
 <body>
     <div class="header_con">
         <div class="header">
-            <a href="#" class="logo fl"><img src="../../static/news/images/logo.png" alt="logo"></a>
-            <ul class="menu fl">
+            <a href="/" class="logo fl"><img src="../../static/news/images/logo.png" alt="logo"></a>
+            {% block LeftTopBlock %}
+                <ul class="menu fl">
                 {% for category in data.news_category %}
                 <li class="{% if loop.index==1 %}category{% endif %}" data-cid="{{ loop.index }}"><a href="javascript:;">{{ category.name }}</a></li>
                 {% endfor %}
@@ -23,6 +26,8 @@
 {#                <li data-cid="5"><a href="javascript:;">外汇</a></li>#}
 {#                <li data-cid="6"><a href="javascript:;">公司</a></li>#}
             </ul>
+            {% endblock %}
+
             {% if not data.user_info %}
                 <div class="user_btns fr">
                     <a href="javascript:;" class="login_btn">登录</a> / <a href="javascript:;" class="register_btn">注册</a>
@@ -30,16 +35,17 @@
             <!-- 用户登录后显示下面，隐藏上面 -->
             {% else %}
             <div class="user_login fr">
-                <img src="../../static/news/images/person01.png" class="lgin_pic">
-                <a href="#">{{ data.user_info.nick_name }}</a>
+                <img src="{% if data.user_info.avatar_url %}{{ data.user_info.avatar_url }}{% else %}../../static/news/images/person01.png {% endif %}" class="lgin_pic">
+                <a href="{{ url_for('profile.info') }}" id="nick_name">{{ data.user_info.nick_name }}</a>
                 <a href="#" onclick="logout()">退出</a>
             </div>
             {% endif %}
         </div>
     </div>
-    
-    <div class="conter_con">
-        <ul class="list_con fl">
+    {% block Conter_con %}
+        <div class="conter_con">
+        {% block LeftBlock %}
+            <ul class="list_con fl">
             <li>
                 <a href="#" class="news_pic fl"><img src="../../static/news/images/news_pic.jpg"></a>
                 <a href="#" class="news_title fl">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市软银计划将手机业务分拆上市</a>
@@ -87,7 +93,13 @@
                 </div>
             </li>
         </ul>
-        <div class="rank_con fr">
+        {% endblock %}
+        {% block ContentBlock %}
+            <div class="rank_con fr">
+
+            {% block RightBlock %}
+
+            {% endblock %}
             <div class="rank_title">
                 <h3>点击排行</h3>
             </div>
@@ -102,8 +114,12 @@
 {#                <li><span>6</span><a href="#">人民日报：部分城市楼市放松限制引关注，楼市调控不会“拉抽屉”</a></li>#}
             </ul>
         </div>
+        {% endblock %}
     </div>
-    <div class="footer">        
+    {% endblock %}
+
+    {% block Footerblock %}
+        <div class="footer">
         <div class="footer_links">
             <a href="">关于我们</a>
             <span>|</span>
@@ -118,6 +134,8 @@
 电话：010-****888    京ICP备*******8号
         </p>
     </div>
+    {% endblock %}
+
     
     <!-- 登录表单 -->
     <form class="login_form_con">

@@ -46,6 +46,8 @@ class User(BaseModel, db.Model):
 
     # 当前用户收藏的所有新闻
     collection_news = db.relationship("News", secondary=tb_user_collection, lazy="dynamic")  # 用户收藏的新闻
+
+    # author.followers 作者的粉丝 author.followed作者关注的人
     # 用户所有的粉丝，添加了反向引用followed，代表用户都关注了哪些人
     followers = db.relationship('User',
                                 secondary=tb_user_follows,
@@ -82,7 +84,7 @@ class User(BaseModel, db.Model):
             "gender": self.gender if self.gender else "MAN",
             "signature": self.signature if self.signature else "",
             "followers_count": self.followers.count(),
-            "news_count": self.news_list.count()
+            "news_count": self.news_list.count(),
         }
         return resp_dict
 
@@ -117,7 +119,6 @@ class News(BaseModel, db.Model):
     comments = db.relationship("Comment", lazy="dynamic")
 
     def to_review_dict(self):
-
         resp_dict = {
             "id": self.id,
             "title": self.title,
@@ -126,7 +127,6 @@ class News(BaseModel, db.Model):
             "reason": self.reason if self.reason else ""
         }
         return resp_dict
-
 
     def to_basic_dict(self):
         """将新闻对象信息转换为字典数据"""
@@ -162,13 +162,14 @@ class Comment(BaseModel, db.Model):
     """评论"""
     __tablename__ = "info_comment"
 
-    id = db.Column(db.Integer, primary_key=True)  # 评论编号
+    # 评论编号
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("info_user.id"), nullable=False)  # 用户id
     news_id = db.Column(db.Integer, db.ForeignKey("info_news.id"), nullable=False)  # 新闻id
     content = db.Column(db.Text, nullable=False)  # 评论内容
     parent_id = db.Column(db.Integer, db.ForeignKey("info_comment.id"))  # 父评论id
     parent = db.relationship("Comment", remote_side=[id])  # 自关联
-    like_count = db.Column(db.Integer, default=0)  # 点赞条数
+    like_count =  db.Column(db.Integer, default=0)  # 点赞条数
 
     def to_dict(self):
         resp_dict = {
