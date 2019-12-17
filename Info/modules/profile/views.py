@@ -1,5 +1,6 @@
 from Info import db
-from Info.constants import QINIU_DOMIN_PREFIX
+from Info.constants import QINIU_DOMIN_PREFIX, USER_COLLECTION_MAX_NEWS
+from Info.models import News
 from Info.utils.common import get_login_data
 from Info.utils.response_code import RET
 from . import profile_blu
@@ -127,4 +128,63 @@ def pass_info():
     return jsonify(errno=RET.OK, errmsg='操作成功')
 
 
+@profile_blu.route('/collect_news', methods=["GET"])
+@get_login_data
+def collect_news():
+    user = g.user
+    if not user:
+        return redirect('/')
+    page_now = request.args.get('P', 1)
+    try:
+        page_now = int(page_now)
+    except Exception as e:
+        current_app.logger.error(e)
+        page_now = 1
 
+    current_page_news = []
+    total_pages = 1
+    current_page = 1
+    try:
+        collection_news_mod = user.collection_news.paginate(page_now, USER_COLLECTION_MAX_NEWS, False)
+        current_page_news = collection_news_mod.items
+        total_pages = collection_news_mod.pages
+        current_page = collection_news_mod.page
+    except Exception as e:
+        current_app.logger.error(e)
+    current_page_news_lst = []
+    for i in current_page_news:
+        current_page_news_lst.append(i.to_dict())
+    data = {
+        "current_page_news_lst": current_page_news_lst,
+        "total_pages": total_pages,
+        "current_page": current_page
+    }
+    return render_template('news/user_collection.html', data=data)
+
+
+@profile_blu.route('/news_list', methods=['GET'])
+@get_login_data
+def news_list():
+    user = g.user
+    if not user:
+        return redirect('/')
+    current_page = request.args.get('P')
+    news_items = []
+    total_pages = 1
+    cur_page = 1
+    try:
+        news = News.query.filter(News.user_id == user.id).order_by(News.create_time.desc()).paginate(current_page, USER_COLLECTION_MAX_NEWS, False)
+        news_items = news.items
+        total_pages = news.pages
+        cur_page = news.page
+    except Exception as e:
+        current_app.logger.error(e)
+    news_items_lst = []
+    for i in news_items:
+        news_items_lst.append(i.to_review_dict())
+    data = {
+        "news_items_lst": news_items_lst,
+        "total_pages": total_pages,
+        "cur_page": cur_page
+    }
+    return render_template('news/user_news_list.html', data=data)

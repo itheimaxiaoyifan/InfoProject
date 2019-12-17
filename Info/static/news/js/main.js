@@ -98,7 +98,6 @@ $(function () {
             $('#main_frame').css({'height': 660});
         }
         $(this).addClass('active').siblings().removeClass('active');
-        $(this).find('a')[0].click()
     })
 
     // TODO 登录表单提交

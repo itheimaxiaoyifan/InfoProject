@@ -51,6 +51,8 @@ def create_app(env):
     app.register_blueprint(news_detail_blu)
     from Info.modules.profile import profile_blu
     app.register_blueprint(profile_blu)
+    from Info.modules.admin import admin_blu
+    app.register_blueprint(admin_blu)
 
     from Info.utils.common import get_login_data
     @app.errorhandler(404)

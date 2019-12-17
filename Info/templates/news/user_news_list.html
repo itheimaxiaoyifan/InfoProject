@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>用户中心</title>
+	<link rel="stylesheet" type="text/css" href="../../static/news/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../../static/news/css/jquery.pagination.css">
+    <link rel="stylesheet" type="text/css" href="../../static/news/css/main.css">
+    <script type="text/javascript" src="../../static/news/js/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="../../static/news/js/jquery.pagination.min.js"></script>
+</head>
+<body class="inframe_body">
+    <div class="news_list">
+        <h3>新闻列表</h3>
+        <ul class="article_list">
+            {% for i in data.news_items_lst %}
+                {% if i.status ==0 %}
+                    <li><a href="/news_detail/{{ i.id }}">{{ i.title }}</a><em class="pass">已通过</em><span>{{ i.create_time }}</span></li>
+                {% elif i.status ==1 %}
+                    <li><a href="javascript:;">{{ i.title }}</a><em class="review">审核中</em><span>{{ i.create_time }}</span></li>
+                {% else %}
+                    <li>
+                        <a href="javascript:;">{{ i.title }}</a>
+                        <em class="nopass">未通过</em>
+                        <span>{{ i.create_time }}</span>
+                        <b>{{ i.reason }}</b>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <div id="pagination" class="page"></div>
+        <script>
+            // 调用父页面的方法改变菜单指示
+            // window.parent.fnChangeMenu(2);
+
+            $(function(){
+                $("#pagination").pagination({
+                    currentPage: {{ data.cur_page }},
+                    totalPage: {{ data.total_pages }},
+                    callback: function(current) {
+                        window.location.href = "/user/news_list?P=" + current
+                    }
+                });
+            });
+        </script>
+       
+    </div>
+</body>
+</html>
