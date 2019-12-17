@@ -1,6 +1,6 @@
 from Info import db
 from Info.constants import QINIU_DOMIN_PREFIX, USER_COLLECTION_MAX_NEWS
-from Info.models import News
+from Info.models import News, Category
 from Info.utils.common import get_login_data
 from Info.utils.response_code import RET
 from . import profile_blu
@@ -165,6 +165,11 @@ def collect_news():
 @profile_blu.route('/news_list', methods=['GET'])
 @get_login_data
 def news_list():
+    """
+        请求方式为GET,先判断用户是否登录，如果没有登录是看不到这个页面的，直接返回到主页
+
+    :return:
+    """
     user = g.user
     if not user:
         return redirect('/')
@@ -173,7 +178,9 @@ def news_list():
     total_pages = 1
     cur_page = 1
     try:
-        news = News.query.filter(News.user_id == user.id).order_by(News.create_time.desc()).paginate(current_page, USER_COLLECTION_MAX_NEWS, False)
+        news = News.query.filter(News.user_id == user.id).order_by(News.create_time.desc()).paginate(current_page,
+                                                                                                     USER_COLLECTION_MAX_NEWS,
+                                                                                                     False)
         news_items = news.items
         total_pages = news.pages
         cur_page = news.page
@@ -188,3 +195,63 @@ def news_list():
         "cur_page": cur_page
     }
     return render_template('news/user_news_list.html', data=data)
+
+
+@profile_blu.route('/news_release', methods=["GET", "POST"])
+@get_login_data
+def news_release():
+    """
+    如果是get请求，进入界面之后获取的参数就是通过查询出来的新闻的分类Category
+    如果是post请求，1.获取参数
+                    news.title
+                    news.digest
+                    files.index_image
+                    news.content
+                    2.上传图片文件到七牛云
+                    3.创建一条新闻(新创建的新闻已发布状态应该为审核中：1)
+                    4.保存新闻数据
+                    5.返回数据给前端，显示成功
+    :return:
+    """
+    user = g.user
+    if not user:
+        return redirect('/')
+    if request.method == 'GET':
+        try:
+            category = Category.query.all()
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET.DATAERR, errmsg='查询数据库失败')
+        category_list = []
+        for i in category:
+            category_list.append(i)
+        data = {
+            "category_list": category_list
+        }
+        return render_template('news/user_news_release.html', data=data)
+    title = request.form.get("title")
+    digest = request.form.get("digest")
+    if request.files.get('index_image'):
+        from Info.utils.qiniu_pro import qinniu_storage
+        index_image = request.files.get('index_image').read()
+        try:
+            index_image_key = qinniu_storage(index_image)
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET.THIRDERR, errmsg='上传图片到七牛云失败')
+    content = request.form.get("content")
+    news = News()
+    news.title = title
+    news.index_image_url = QINIU_DOMIN_PREFIX + index_image_key if request.files.get('index_image') else None
+    news.source = "个人来源"
+    news.digest = digest
+    news.content = content
+    news.status = 1
+    news.user_id = user.id
+    try:
+        db.session.add(news)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DATAERR, errmsg='添加新闻失败')
+    return jsonify(errno=RET.OK, errmsg='发布新闻成功, 待审核')

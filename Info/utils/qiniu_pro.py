@@ -15,7 +15,7 @@ def qinniu_storage(img_data):
     token = q.upload_token(bucket_name)
     # 要上传文件的本地路径
     ret, info = qiniu.put_data(token, None, img_data)
-    print("ret['key']", ret['key'])
+    # print("ret['key']", ret['key'])
     return ret['key']
 
 
