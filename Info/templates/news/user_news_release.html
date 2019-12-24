@@ -19,7 +19,7 @@
             <label>新闻分类：</label>
             <select class="sel_opt" name="category_id">
                 {% for i in data.category_list %}
-                <option value="">{{ i.name }}</option>
+                <option value="{{ i.id }}">{{ i.name }}</option>
                 {% endfor %}
             </select>
         </div>

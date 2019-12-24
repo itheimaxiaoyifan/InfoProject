@@ -210,6 +210,7 @@ function logout() {
         type:'get',
         success:function (resp) {
             // alert(resp.errmsg)
+            alert('退出成功')
             window.location.reload()
         }
     })

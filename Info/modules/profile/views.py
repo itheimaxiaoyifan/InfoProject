@@ -231,6 +231,7 @@ def news_release():
         return render_template('news/user_news_release.html', data=data)
     title = request.form.get("title")
     digest = request.form.get("digest")
+    category_id = request.form.get("category_id")
     if request.files.get('index_image'):
         from Info.utils.qiniu_pro import qinniu_storage
         index_image = request.files.get('index_image').read()
@@ -244,6 +245,7 @@ def news_release():
     news.title = title
     news.index_image_url = QINIU_DOMIN_PREFIX + index_image_key if request.files.get('index_image') else None
     news.source = "个人来源"
+    news.category_id = category_id
     news.digest = digest
     news.content = content
     news.status = 1

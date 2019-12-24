@@ -160,4 +160,5 @@ def logout():
     session.pop('user_id')
     session.pop('nick_name')
     session.pop('mobile')
+    session.pop('is_admin', None)
     return jsonify(errno=RET.OK, errmsg='用户已退出')

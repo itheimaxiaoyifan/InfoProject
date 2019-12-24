@@ -68,9 +68,9 @@ $(function(){
         }
 
         // TODO 发起修改分类请求
-        /*
+
         $.ajax({
-            url:"/admin/add_category",
+            url:"/admin/news_type",
             method: "post",
             headers: {
                 "X-CSRFToken": getCookie("csrf_token")
@@ -86,7 +86,7 @@ $(function(){
                 }
             }
         })
-        */
+
 
     })
 })

@@ -24,9 +24,8 @@ $(function(){
             "news_id": news_id,
             "reason": reason
         }
-        /*
         $.ajax({
-            url: "/admin/news_review_detail",
+            url: "/admin/news_review_action",
             type: "post",
             contentType: "application/json",
             headers: {
@@ -36,13 +35,13 @@ $(function(){
             success: function (resp) {
                 if (resp.errno == "0") {
                     // 返回上一页，刷新数据
+                     alert(resp.errmsg);
                     location.href = document.referrer;
                 }else {
                     alert(resp.errmsg);
                 }
             }
         })
-        */
     })
 })
 
