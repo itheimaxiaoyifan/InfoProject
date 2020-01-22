@@ -34,4 +34,6 @@ def createsuperuser(name, password):
 
 
 if __name__ == '__main__':
+
+    print(app.route)
     manager.run()
